@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import TimerController from "./TimerController";
 
 const TimerSection = ({ activeTimer, timer, playPauseTimer, resetTimer }) => {
     const [time, setTime] = useState(timer);
@@ -12,8 +13,8 @@ const TimerSection = ({ activeTimer, timer, playPauseTimer, resetTimer }) => {
     }, [timer]);
 
     return (
-        <div class="col card text-center mt-4">
-            <div class="card-body">
+        <div className="col card text-center mt-4">
+            <div className="card-body">
                 <h3 id="timer-label" className="card-title text-uppercase">
                     {activeTimer}
                 </h3>
@@ -21,7 +22,7 @@ const TimerSection = ({ activeTimer, timer, playPauseTimer, resetTimer }) => {
                     {time}
                 </h1>
             </div>
-            <div class="card-footer">
+            <div className="card-footer">
                 <TimerController
                     resetTimer={resetTimer}
                     playPauseTimer={playPauseTimer}

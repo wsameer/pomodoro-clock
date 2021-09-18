@@ -1,4 +1,6 @@
 import React from "react";
+import TimerSetting from "./TimerSetting";
+import TimerSettingTitle from "./TimerSettingTitle";
 
 const TimerSettingSection = ({
     titleId,
