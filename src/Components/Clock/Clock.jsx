@@ -1,143 +1,179 @@
-import React, { useState, useCallback } from "react";
-import { accurateInterval } from "../../utils/accurateInterval";
+import React, { useState, useEffect, useRef } from "react";
 import TimerSection from "./TimerSection";
 import TimerSettingSection from "./TimerSettingSection";
 
 const MAX_TIMER_LENGTH = 60;
 const MIN_TIMER_LENGTH = 1;
 
+function useInterval(callback, delay) {
+    const savedCallback = useRef();
+
+    useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+
+    useEffect(() => {
+        function tick() {
+            savedCallback.current();
+        }
+        if (delay !== null) {
+            let id = setInterval(tick, delay);
+            return () => clearInterval(id);
+        }
+    }, [delay]);
+}
+
 export const Clock = () => {
     const [breakLength, setBreakLength] = useState(5);
     const [sessionLength, setSessionLength] = useState(1);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [activeTimer, setActiveTimer] = useState("Session");
-    const [intervalId, setIntervalId] = useState("");
-    const [timer, setTimer] = useState(60);
+    const [timer, setTimer] = useState(10); // MAX_TIMER_LENGTH * 25
+    const [textColor, setTextColor] = useState("text-body");
+    const [warning, setWarning] = useState("off");
 
-    // TODO remove
-    const audioBeep = null;
+    let audioBeep = useRef(null);
+
+    useInterval(
+        () => {
+            if (isTimerActive && timer > 0) {
+                setTimer(timer - 1);
+            }
+            if (timer < 11) {
+                setTextColor("text-danger");
+                setWarning("on");
+            }
+            if (timer === 0) {
+                activeTimer === "Session"
+                    ? switchTimer(breakLength * 60, "Break")
+                    : switchTimer(sessionLength * 60, "Session");
+                audioBeep.current.play();
+                setTextColor("text-body");
+                setWarning("off");
+            }
+        },
+        isTimerActive ? 1000 : null
+    );
+
+    useEffect(() => {
+        setTimer(timer);
+    }, [timer]);
 
     const updateBreakLength = (event) => {
-        if (isTimerActive) {
-            return;
-        }
+            if (isTimerActive) {
+                return;
+            }
 
-        if (activeTimer === "Session") {
             if (
                 event.target.innerHTML === "Down" &&
                 breakLength !== MIN_TIMER_LENGTH
             ) {
                 setBreakLength((prev) => prev - 1);
-                // activeTimer === "Session" && setTimer(breakLength * 60 - 60);
+                activeTimer !== "Session" && setTimer(breakLength * 60 - 60);
             } else if (
                 event.target.innerHTML === "Up" &&
                 breakLength !== MAX_TIMER_LENGTH
             ) {
                 setBreakLength((prev) => prev + 1);
-                // activeTimer === "Session" && setTimer(breakLength * 60 + 60);
+                activeTimer !== "Session" && setTimer(breakLength * 60 + 60);
             }
-        } else if (
-            event.target.innerHTML === "Down" &&
-            breakLength !== MIN_TIMER_LENGTH
-        ) {
-            setBreakLength((prev) => prev - 1);
-            setTimer(breakLength * 60 - 60);
-        } else if (
-            event.target.innerHTML === "Up" &&
-            breakLength !== MAX_TIMER_LENGTH
-        ) {
-            setBreakLength((prev) => prev + 1);
-            setTimer(breakLength * 60 + 60);
-        }
-    };
+        },
+        updateSessionLength = (event) => {
+            if (isTimerActive) {
+                return;
+            }
 
-    const updateSessionLength = (event) => {
-        if (isTimerActive) {
-            return;
-        }
-        if (activeTimer === "Break") {
             if (
                 event.target.innerHTML === "Down" &&
                 sessionLength !== MIN_TIMER_LENGTH
             ) {
                 setSessionLength((prev) => prev - 1);
-                // activeTimer === "Break" && setTimer(sessionLength * 60 - 60);
+                activeTimer !== "Break" && setTimer(sessionLength * 60 - 60);
             } else if (
                 event.target.innerHTML === "Up" &&
                 sessionLength !== MAX_TIMER_LENGTH
             ) {
                 setSessionLength((prev) => prev + 1);
-                // activeTimer === "Break" && setTimer(sessionLength * 60 + 60);
+                activeTimer !== "Break" && setTimer(sessionLength * 60 + 60);
             }
-        } else if (
-            event.target.innerHTML === "Down" &&
-            sessionLength !== MIN_TIMER_LENGTH
-        ) {
-            setSessionLength((prev) => prev - 1);
-            setTimer(sessionLength * 60 - 60);
-        } else if (
-            event.target.innerHTML === "Up" &&
-            sessionLength !== MAX_TIMER_LENGTH
-        ) {
-            setSessionLength((prev) => prev + 1);
-            setTimer(sessionLength * 60 + 60);
-        }
-    };
-
-    const decrementTimer = () => setTimer((prev) => prev - 1);
-    const switchTimer = (length, type) => {
-        setActiveTimer(type);
-        setTimer(length);
-    };
-    const buzzer = (t) => {
-        t === 0 ?? audioBeep?.play();
-    };
-    const phaseControl = () => {
-        let tempTimer = timer;
-        buzzer(tempTimer);
-        if (tempTimer < 0) {
-            intervalId && intervalId.cancel();
-            beginCountDown();
-            activeTimer === "Session"
-                ? switchTimer(breakLength * 60, "Break")
-                : switchTimer(sessionLength * 60, "Session");
-        }
-    };
-    const beginCountDown = () => {
-        setIntervalId(
-            accurateInterval(() => {
-                decrementTimer();
-                phaseControl();
-            }, 1000)
-        );
-    };
-
-    const resetTimer = useCallback(() => {
-        setBreakLength(5);
-        setSessionLength(25);
-        setIsTimerActive(false);
-        setActiveTimer("Session");
-        setTimer(1500);
-        setIntervalId("");
-
-        if (intervalId) {
-            intervalId.cancel();
-        }
-        // this.audioBeep.pause();
-        // this.audioBeep.currentTime = 0;
-    }, [intervalId]);
-
-    const playPauseTimer = () => {
-        if (!isTimerActive) {
-            beginCountDown();
-            setIsTimerActive(true);
-        } else {
+        },
+        getCurrentTime = () => {
+            let minutes = Math.floor(timer / 60);
+            let seconds = timer - minutes * 60;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            return `${minutes.toString()}:${seconds.toString()}`;
+        },
+        startTimer = () => setIsTimerActive(!isTimerActive),
+        resetTimer = () => {
+            setBreakLength(5);
+            setSessionLength(25);
             setIsTimerActive(false);
-            if (intervalId) {
-                intervalId.cancel();
-            }
-        }
-    };
+            setActiveTimer("Session");
+            setTimer(10);
+            setTextColor("text-body");
+            setWarning("off");
+            audioBeep.current.pause();
+            audioBeep.current.currentTime = 0;
+        },
+        switchTimer = (remainingTime, timerMode) => {
+            console.log("switchTimer ---------->", remainingTime, timerMode);
+            setActiveTimer(timerMode);
+            setTimer(remainingTime);
+        };
+
+    // ---------------------
+
+    // const decrementTimer = useCallback(() => {
+    //     console.log("decrementTimer -----------", timer);
+    //     setTimer(timer - 1);
+    // }, [timer]);
+
+    // const buzzer = useCallback(
+    //     (t) => {
+    //         t === 0 ?? audioBeep?.play();
+    //     },
+    //     [audioBeep]
+    // );
+
+    // function phaseControl() {
+    //     let tempTimer = timer;
+    //     console.log(timer, tempTimer);
+    //     buzzer(tempTimer);
+    //     if (tempTimer < 0) {
+    //         console.log("phaseControl ------------>", timer);
+    //         console.log(intervalId);
+    //         if (intervalId) {
+    //             intervalId.cancel();
+    //         }
+    //         beginCountDown();
+    //         activeTimer === "Session"
+    //             ? switchTimer(breakLength * 60, "Break")
+    //             : switchTimer(sessionLength * 60, "Session");
+    //     }
+    // }
+
+    // const playPauseTimer = () => {
+    //     if (!isTimerActive) {
+    //         beginCountDown();
+    //         setIsTimerActive(true);
+    //     } else {
+    //         setIsTimerActive(false);
+    //         if (intervalId) {
+    //             intervalId.cancel();
+    //             // clearInterval(intervalId);
+    //         }
+    //     }
+    // };
+
+    // const clockify = () => {
+    //     // console.log("clofuy", timer);
+    //     let minutes = Math.floor(timer / 60);
+    //     let seconds = timer - minutes * 60;
+    //     seconds = seconds < 10 ? "0" + seconds : seconds;
+    //     minutes = minutes < 10 ? "0" + minutes : minutes;
+    //     return minutes + ":" + seconds;
+    // };
 
     return (
         <div className="container-fluid mt-5 d-flex justify-content-center align-items-center">
@@ -179,10 +215,11 @@ export const Clock = () => {
                 <div className="col-md-6 offset-md-3">
                     <TimerSection
                         activeTimer={activeTimer}
-                        isTimerActive={isTimerActive}
                         timer={timer}
                         resetTimer={resetTimer}
-                        playPauseTimer={playPauseTimer}
+                        startTimer={startTimer}
+                        getCurrentTime={getCurrentTime}
+                        textColor={textColor}
                     />
                 </div>
                 <div className="w-100"></div>
@@ -200,8 +237,9 @@ export const Clock = () => {
             <audio
                 id="beep"
                 preload="auto"
-                // ref="alarm"
+                ref={audioBeep}
                 src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+                type="audio"
             />
         </div>
     );
