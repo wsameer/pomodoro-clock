@@ -1,11 +1,11 @@
 import React from "react";
 
-const TimerController = ({ resetTimer, playPauseTimer }) => (
+const TimerController = ({ resetTimer, startTimer }) => (
     <div className="mt-2">
         <button
             className="btn btn-outline-dark me-2"
             id="start_stop"
-            onClick={playPauseTimer}
+            onClick={startTimer}
         >
             <span className="text-primary">Play</span> |{" "}
             <span className="text-danger">Pause</span>

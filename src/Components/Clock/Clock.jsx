@@ -28,7 +28,7 @@ export const Clock = () => {
     const [sessionLength, setSessionLength] = useState(1);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [activeTimer, setActiveTimer] = useState("Session");
-    const [timer, setTimer] = useState(10); // MAX_TIMER_LENGTH * 25
+    const [timer, setTimer] = useState(MAX_TIMER_LENGTH * 25);
     const [textColor, setTextColor] = useState("text-body");
     const [warning, setWarning] = useState("off");
 
@@ -110,14 +110,13 @@ export const Clock = () => {
             setSessionLength(25);
             setIsTimerActive(false);
             setActiveTimer("Session");
-            setTimer(10);
+            setTimer(MAX_TIMER_LENGTH * 25);
             setTextColor("text-body");
             setWarning("off");
             audioBeep.current.pause();
             audioBeep.current.currentTime = 0;
         },
         switchTimer = (remainingTime, timerMode) => {
-            console.log("switchTimer ---------->", remainingTime, timerMode);
             setActiveTimer(timerMode);
             setTimer(remainingTime);
         };
