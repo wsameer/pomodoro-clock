@@ -1,0 +1,177 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders the app properly 1`] = `
+<div>
+  <div
+    class="App"
+  >
+    <div
+      class="container-fluid mt-5 d-flex justify-content-center align-items-center"
+    >
+      <div
+        class="row w-700 text-center"
+      >
+        <h1
+          class="mb-4"
+        >
+          25 + 5 Clock
+        </h1>
+        <div
+          class="col me-2"
+        >
+          <div
+            class="fs-5"
+            id="break-label"
+          >
+            Break Length
+          </div>
+          <div
+            class="row mt-2 align-items-center"
+          >
+            <button
+              class="col btn btn-success"
+              id="break-increment"
+              value="+"
+            >
+              Up
+            </button>
+            <div
+              class="col"
+              id="break-length"
+            >
+              5
+            </div>
+            <button
+              class="col btn btn-danger"
+              id="break-decrement"
+              value="-"
+            >
+              Down
+            </button>
+          </div>
+        </div>
+        <div
+          class="col me-2"
+        >
+          <div
+            class="fs-5"
+            id="session-label"
+          >
+            Session Length
+          </div>
+          <div
+            class="row mt-2 align-items-center"
+          >
+            <button
+              class="col btn btn-success"
+              id="session-increment"
+              value="+"
+            >
+              Up
+            </button>
+            <div
+              class="col"
+              id="session-length"
+            >
+              1
+            </div>
+            <button
+              class="col btn btn-danger"
+              id="session-decrement"
+              value="-"
+            >
+              Down
+            </button>
+          </div>
+        </div>
+        <div
+          class="w-100"
+        />
+        <div
+          class="col-md-6 offset-md-3"
+        >
+          <div
+            class="col card text-center mt-4"
+          >
+            <div
+              class="card-body"
+            >
+              <h3
+                class="card-title text-uppercase"
+                id="timer-label"
+              >
+                Session
+              </h3>
+              <h1
+                class="text-jumbo text-body"
+                id="time-left"
+              >
+                25:00
+              </h1>
+            </div>
+            <div
+              class="card-footer"
+            >
+              <div
+                class="mt-2"
+              >
+                <button
+                  class="btn btn-outline-dark me-2"
+                  id="start_stop"
+                >
+                  <span
+                    class="text-primary"
+                  >
+                    Play
+                  </span>
+                   |
+                   
+                  <span
+                    class="text-danger"
+                  >
+                    Pause
+                  </span>
+                </button>
+                <button
+                  class="btn btn-outline-dark me-2"
+                  id="reset"
+                >
+                  <span
+                    class="text-success"
+                  >
+                    Reset
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="w-100"
+        />
+        <div
+          class="col-md-6 offset-md-3 mt-4"
+        >
+          <span>
+            Designed and Developed by
+          </span>
+           
+          <a
+            href="https://www.linkedin.com/in/wsameer/"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Sameer Waskar
+          </a>
+        </div>
+      </div>
+      <audio
+        id="beep"
+        preload="auto"
+        src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+        type="audio"
+      />
+    </div>
+  </div>
+</div>
+`;
